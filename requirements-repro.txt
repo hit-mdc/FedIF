@@ -1,0 +1,6 @@
+# Tested direct dependencies for Python 3.12. Use the same build on every party.
+# Select CPU wheels explicitly using the command in README.md.
+numpy==2.3.5
+torch==2.14.0
+scikit-learn==1.8.0
+aeon==1.5.0

@@ -1,0 +1,8 @@
+{
+  "mp_spdz_path": "/opt/MP-SPDZ",
+  "party_id": 0,
+  "work_dir": "sessions",
+  "network_args": ["-h", "127.0.0.1", "-pn", "15000"],
+  "python_executable": "python3",
+  "timeout": 86400
+}
