@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fedif"
 version = "0.2.0"
-description = "Federated interval-based time series classification with QUANT and MP-SPDZ"
+description = "Federated interval-based time series classification with SPDZ"
 readme = "README.md"
 license = "GPL-3.0-only"
-license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "torch>=2.1", "scikit-learn>=1.3"]
 
