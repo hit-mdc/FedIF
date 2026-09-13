@@ -3,9 +3,6 @@
 # FedIF
 ### Interval-Based Time Series Classification over Data Federation
 
-<!--
-**Local interval representations · Secure collaborative learning · Public forest inference**
--->
 
 [Overview](#overview) · [Setup](#environment-setup) · [Protocols](#protocols) · [UCR Experiments](#ucr-experiments) · [Python API](#python-interface) 
 
@@ -13,50 +10,16 @@
 
 ## Overview
 
-<!--FedIF brings interval-based time series classification to a federated setting,
-allowing multiple data owners to learn a shared classifier while retaining their
-time series locally. Each participant independently extracts interval-based features;
-the parties then train an ensemble of randomized decision trees (RDTs) through
-secure multi-party computation. Training produces a public forest that supports
-local prediction through a scikit-learn-style interface.-->
+FedIF is a federated `interval-based` framework for time series classification, allowing multiple data owners to build a shared interval-based classifier while retaining their time series locally. Each participant independently extracts interval-based features (e.g., QUANT); the parties then train an ensemble of randomized decision trees (RDTs) through secure multi-party computation (MPC). Training produces a public forest that supports local prediction through a scikit-learn-style interface.
 
-FedIF is a federated interval-based framework for time series classification, allowing multiple data owners to build a shared interval-based classifier while retaining their time series locally. Each participant independently extracts interval-based features (e.g., QUANT); the parties then train an ensemble of randomized decision trees (RDTs) through secure multi-party computation (MPC). Training produces a public forest that supports local prediction through a scikit-learn-style interface.
+<p align="center">
+  <img src="https://github.com/hit-mdc/FedTSC-FedIF/blob/main/docs/FedIF-framework.jpg" width="50%">
+</p>
 
 You may also be interested in:
-- [FedST](https://link.springer.com/article/10.1007/s00778-024-00865-w), a secure and interpretable federated time series classification framework by collaboratively searching for time series `shapelets` through MPC;
-- [FedDict](https://ieeexplore.ieee.org/document/10836844), a practical framework built on bag-of-words style `dictionary-based` features for privacy-preserving, efficient, and interpretable time series classification;
-- [FedTSC](https://www.vldb.org/pvldb/vol15/p3686-wang.pdf), a secure and interpretable federated time series classification system, which incorporates MPC protocols in the backends for decentralized feature extraction and classifier training while providinf Sklearn-style APIs for easy use and deployment. 
-
-
-
-<!--
-The method combines three complementary components:
-
-- **Federated interval learning:** local QUANT representations and joint RDT
-  training over secret-shared features and labels.
-- **ImprovedCountSamples (ICS):** fixed-size local count tables and hierarchical
-  search tree queries for secure sample counting.
-- **EvaluateSplitApprox (ESA):** Taylor-based candidate screening followed by
-  entropy information gain evaluation on the securely retained candidates.
-
-These components provide a common framework for studying classification accuracy,
-secure training cost, and the effect of the number of collaborating parties.
--->
-
-<!--
-For each internal node, the parties publicly sample `q` candidate features.
-For each candidate, MPC computes the node's feature extrema, generates a secret
-threshold, and obtains left/right per-class counts. The evaluation protocol
-assigns secret scores, and `FindBestSplit` reveals the winning feature and
-threshold. Leaf nodes reveal their majority class. All RDTs grow to the prescribed
-height, including virtual splits, with a fixed secure traversal.
-
-The training protocol follows a semi-honest setting with public dimensions
-`n, M, M_i, N, C, K`. Splits consistently use `x < tau` for the left branch and
-`x >= tau` for the right branch. The ensemble predicts by majority vote.
-See the [protocol specification](docs/protocol.md) for the algorithms and
-fixed-point numerical conventions.
--->
+- [FedST](https://link.springer.com/article/10.1007/s00778-024-00865-w), a *secure* and *interpretable* federated time series classification framework by collaboratively searching for time series `shapelets` through MPC;
+- [FedDict](https://ieeexplore.ieee.org/document/10836844), a practical framework built on bag-of-words style `dictionary-based` features for *privacy-preserving*, *efficient*, and *interpretable* time series classification;
+- [FedTSC](https://www.vldb.org/pvldb/vol15/p3686-wang.pdf), a *secure* and *interpretable* federated time series classification system, which incorporates MPC protocols in the backends for decentralized feature extraction and classifier training while providing Sklearn-style APIs for easy use and deployment. 
 
 
 ## Environment setup
@@ -103,7 +66,7 @@ the installed MP-SPDZ `Compiler` API.
 
 ## Protocols
 
-The basic RDT training protocl directly extends centralized algorithm using MPC. Identifying its efficiency bottlenecks in the `CountSamples` and `EvaluateSplit` stages, FedIF further proposes two acceleration methods to boost the efficiency while guaranteeing the security and classification accuracy:
+The basic RDT training protocol directly extends centralized algorithm using MPC. Identifying its efficiency bottlenecks in the `CountSamples` and `EvaluateSplit` stages, FedIF further proposes two acceleration methods to boost the efficiency while guaranteeing the security and classification accuracy:
 
 - `ImprovedCountSamples` locally computes all possible sample counts for each split, and then finds and aggregates the matching ones through a hierarchical search tree-based secure query protocol.  
 - `EvaluateSplitApprox` retains the top-*m* split candidates using an MPC-friendly proxy metric of information gain (IG). The MPC-expensive exact IG is computed only on these retained candidates to find the best split at each non-leaf node. 
@@ -129,33 +92,6 @@ Different protocol variants are configurable as follows:
 | `ICS` / `--ICS` | `False` | Enable `ImproveCountSamples` |
 | `ESA` / `--ESA` | `False` | Enable `EvaluateSplitApprox` |
 | `m` / `--m` | 5 | Number of splits retained by ESA |
-<!--| Statistical security | 40 | MP-SPDZ statistical security parameter |
-| `depth` / `--depth` | 6 | QUANT interval depth |
-| `div` / `--div` | 4 | QUANT quantile configuration |
-| `fraction_bits`, `feature_bits` | 16, 48 | Encoded feature precision |
-| `entropy_fraction_bits`, `entropy_bits` | 24, 64 | Score precision |
-| `threshold_bits` | 32 | Threshold random grid width |-->
-
-<!--
-CLI `-r` selects the number of resamples; `-f` selects the candidate feature
-fraction. `--depth` and `--div` configure QUANT, while `--m` configures ESA.
-When `train --parameters` is supplied, that JSON determines the model settings.
-
-
-### Reproducing and reporting experiments
-
-Prepared runs retain the dataset name, resample, allocation seed, dimensions,
-session, and model parameters. Each participant records the public model and
-timings for QUANT transformation, compilation, offline preprocessing, and online
-training. ICS also records local table construction time and query count;
-these operations are included in the online training measurement.
-
-For comparisons, report accuracy, online/offline time, communication, party
-count, and `(ICS, ESA, m)` settings together with hardware and network conditions.
-Archive the dataset list, supplied resampling indices, dependency versions,
-repository revision, and MP-SPDZ build. Use fresh sessions for repeated training
-and summarize variation across the jointly randomized forests.
--->
 
 ## UCR experiments
 
