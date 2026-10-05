@@ -15,12 +15,12 @@ FedIF is a federated `interval-based` framework for time series classification, 
 <p align="center">
   <img src="https://github.com/hit-mdc/FedTSC-FedIF/blob/main/docs/FedIF-framework.jpg" width="50%">
 </p>
-
+<!---
 You may also be interested in:
 - [FedST](https://link.springer.com/article/10.1007/s00778-024-00865-w), a *secure* and *interpretable* federated time series classification framework by collaboratively searching for time series `shapelets` through MPC;
 - [FedDict](https://ieeexplore.ieee.org/document/10836844), a practical framework built on bag-of-words style `dictionary-based` features for *privacy-preserving*, *efficient*, and *interpretable* time series classification;
 - [FedTSC](https://www.vldb.org/pvldb/vol15/p3686-wang.pdf), a *secure* and *interpretable* federated time series classification system, which incorporates MPC protocols in the backends for decentralized feature extraction and classifier training while providing Sklearn-style APIs for easy use and deployment. 
-
+-->
 
 ## Environment setup
 
